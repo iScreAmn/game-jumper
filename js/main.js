@@ -4,6 +4,7 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
+
 canvas.width = 500;
 canvas.height = 500;
 
@@ -12,11 +13,11 @@ canvas.height = 500;
 // ЗАГРУЗКА ИЗОБРАЖЕНИЙ
 
 const horseImg = new Image();
-horseImg.src = "./person.webp";
+horseImg.src = "./img/person.webp";
 horseImg.onload = () => console.log("Horse loaded!");
 
 const obstacleImg = new Image();
-obstacleImg.src = "./obstracle.png";
+obstacleImg.src = "./img/obstracle.png";
 obstacleImg.onload = () => console.log("Obstacle loaded!");
 
 
@@ -28,13 +29,13 @@ let horse = {
   width: 60,
   height: 60,
   dy: 0,
-  gravity: 0.4,
+  gravity: 0.5,
   jumpPower: -10,
   onGround: true,
 };
 
 let obstacles = [];
-let gameSpeed = 3;
+let gameSpeed = 4;
 let score = 0;
 let gameStarted = false;
 
@@ -61,7 +62,7 @@ function jump() {
   }
 }
 
-// ОБНОВЛЕНИЕ ЛОШАДИ (ГРАВИТАЦИЯ)
+// ОБНОВЛЕНИЕ ПЕРСОНАЖА (ГРАВИТАЦИЯ)
 
 function updateHorse() {
   horse.y += horse.dy;
@@ -76,7 +77,7 @@ function updateHorse() {
 // ГЕНЕРАЦИЯ ПРЕПЯТСТВИЙ
 
 function generateObstacle() {
-  obstacles.push({ x: canvas.width, y: 300, width: 150, height: 170 });
+  obstacles.push({ x: canvas.width, y: 300, width: 20, height: 30 });
 }
 
 // ОБНОВЛЕНИЕ ПРЕПЯТСТВИЙ
@@ -107,7 +108,7 @@ function updateObstacles() {
       horse.y < obstacles[i].y + obstacles[i].height &&
       horse.y + horse.height > obstacles[i].y
     ) {
-      alert("Game Over! Score: " + score);
+      
       location.reload();
     }
   }
@@ -120,7 +121,7 @@ document.addEventListener("keydown", (e) => {
     if (!gameStarted) {
       gameStarted = true;
       gameLoop();
-      setInterval(generateObstacle, 2000);
+      setInterval(generateObstacle, 3000);
     }
     jump();
   }
