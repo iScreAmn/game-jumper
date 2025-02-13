@@ -37,3 +37,16 @@ let obstacles = [];
 let gameSpeed = 3;
 let score = 0;
 let gameStarted = false;
+
+// ОТРИСОВКА ЛОШАДИ
+function drawHorse() {
+  ctx.drawImage(horseImg, horse.x, horse.y, horse.width, horse.height);
+}
+
+// ОТРИСОВКА СТАРТОВОГО ЭКРАНА
+function drawStartScreen() {
+  ctx.fillStyle = "black";
+  ctx.font = "40px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText("START - Space Button", canvas.width / 2, canvas.height / 2);
+}
