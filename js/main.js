@@ -50,3 +50,22 @@ function drawStartScreen() {
   ctx.textAlign = "center";
   ctx.fillText("START - Space Button", canvas.width / 2, canvas.height / 2);
 }
+
+// ПРЫЖОК
+function jump() {
+  if (horse.onGround) {
+    horse.dy = horse.jumpPower;
+    horse.onGround = false;
+  }
+}
+
+// ОБНОВЛЕНИЕ ЛОШАДИ (ГРАВИТАЦИЯ)
+function updateHorse() {
+  horse.y += horse.dy;
+  horse.dy += horse.gravity;
+
+  if (horse.y >= 280) {
+    horse.y = 280;
+    horse.onGround = true;
+  }
+}
