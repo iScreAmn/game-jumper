@@ -100,6 +100,7 @@ function updateObstacles() {
     );
   
 // ПРОВЕРКА СТОЛКНОВЕНИЯ
+
     if (
       horse.x < obstacles[i].x + obstacles[i].width &&
       horse.x + horse.width > obstacles[i].x &&
@@ -111,3 +112,17 @@ function updateObstacles() {
     }
   }
 }
+
+// ОБРАБОТЧИК НАЖАТИЯ КЛАВИШИ (СТАРТ И ПРЫЖОК)
+
+document.addEventListener("keydown", (e) => {
+  if (e.code === "Space") {
+    if (!gameStarted) {
+      gameStarted = true;
+      gameLoop();
+      setInterval(generateObstacle, 2000);
+    }
+    jump();
+  }
+});
+
