@@ -126,3 +126,16 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+// ГЛАВНЫЙ ИГРОВОЙ ЦИКЛ
+
+function gameLoop() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawHorse();
+  updateHorse();
+  updateObstacles();
+  requestAnimationFrame(gameLoop);
+}
+
+//  ПОКАЗ СТАРТОВОГО ЭКРАНА
+
+drawStartScreen();
