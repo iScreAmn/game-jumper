@@ -1,0 +1,22 @@
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+  background: skyblue;
+  font-family: Arial, sans-serif;
+}
+
+canvas {
+  /* background: url('background.png') repeat-x; */
+  background: #5aa9dbd6;
+  background-size: cover;
+  border: 2px solid black;
+}
+
+.score {
+  font-size: 24px;
+  margin-top: 10px;
+}
