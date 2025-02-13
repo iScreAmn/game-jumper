@@ -44,6 +44,7 @@ function drawHorse() {
 }
 
 // ОТРИСОВКА СТАРТОВОГО ЭКРАНА
+
 function drawStartScreen() {
   ctx.fillStyle = "black";
   ctx.font = "40px Arial";
@@ -52,6 +53,7 @@ function drawStartScreen() {
 }
 
 // ПРЫЖОК
+
 function jump() {
   if (horse.onGround) {
     horse.dy = horse.jumpPower;
@@ -60,6 +62,7 @@ function jump() {
 }
 
 // ОБНОВЛЕНИЕ ЛОШАДИ (ГРАВИТАЦИЯ)
+
 function updateHorse() {
   horse.y += horse.dy;
   horse.dy += horse.gravity;
@@ -67,5 +70,44 @@ function updateHorse() {
   if (horse.y >= 280) {
     horse.y = 280;
     horse.onGround = true;
+  }
+}
+
+// ГЕНЕРАЦИЯ ПРЕПЯТСТВИЙ
+
+function generateObstacle() {
+  obstacles.push({ x: canvas.width, y: 300, width: 150, height: 170 });
+}
+
+// ОБНОВЛЕНИЕ ПРЕПЯТСТВИЙ
+
+function updateObstacles() {
+  for (let i = 0; i < obstacles.length; i++) {
+    obstacles[i].x -= gameSpeed;
+
+    if (obstacles[i].x + obstacles[i].width < 0) {
+      obstacles.splice(i, 1);
+      score++;
+      document.getElementById("score").textContent = score;
+    }
+
+    ctx.drawImage(
+      obstacleImg,
+      obstacles[i].x,
+      obstacles[i].y,
+      obstacles[i].width,
+      obstacles[i].height
+    );
+  
+// ПРОВЕРКА СТОЛКНОВЕНИЯ
+    if (
+      horse.x < obstacles[i].x + obstacles[i].width &&
+      horse.x + horse.width > obstacles[i].x &&
+      horse.y < obstacles[i].y + obstacles[i].height &&
+      horse.y + horse.height > obstacles[i].y
+    ) {
+      alert("Game Over! Score: " + score);
+      location.reload();
+    }
   }
 }
