@@ -83,13 +83,14 @@ function generateObstacle() {
 // ОБНОВЛЕНИЕ ПРЕПЯТСТВИЙ
 
 function updateObstacles() {
-  for (let i = 0; i < obstacles.length; i++) {
+  for (let i = obstacles.length - 1; i >= 0; i--) {  // Итерируем с конца, чтобы избежать проблем при splice()
     obstacles[i].x -= gameSpeed;
 
     if (obstacles[i].x + obstacles[i].width < 0) {
       obstacles.splice(i, 1);
       score++;
       document.getElementById("score").textContent = score;
+      continue; // После удаления сразу переходим к следующей итерации
     }
 
     ctx.drawImage(
@@ -99,16 +100,16 @@ function updateObstacles() {
       obstacles[i].width,
       obstacles[i].height
     );
-  
-// ПРОВЕРКА СТОЛКНОВЕНИЯ
 
+
+  // ПРОВЕРКА СТОЛКНОВЕНИЯ  
     if (
       horse.x < obstacles[i].x + obstacles[i].width &&
       horse.x + horse.width > obstacles[i].x &&
       horse.y < obstacles[i].y + obstacles[i].height &&
       horse.y + horse.height > obstacles[i].y
     ) {
-      
+      // alert("Game Over! Score: " + score);
       location.reload();
     }
   }
@@ -121,7 +122,7 @@ document.addEventListener("keydown", (e) => {
     if (!gameStarted) {
       gameStarted = true;
       gameLoop();
-      setInterval(generateObstacle, 3000);
+      setInterval(generateObstacle, 2000);
     }
     jump();
   }
