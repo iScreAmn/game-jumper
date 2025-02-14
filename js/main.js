@@ -1,4 +1,4 @@
-// document.fonts.ready.then(drawStartScreen);
+document.fonts.ready.then(drawStartScreen);
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -24,7 +24,7 @@ let character = {
   width: 80,
   height: 80,
   dy: 0,
-  gravity: 0.5,
+  gravity: 0.4,
   jumpPower: -12,
   onGround: true,
 };
@@ -66,6 +66,10 @@ function drawStats() {
   recentGames.forEach((gameScore, index) => {
     ctx.fillText(`Game ${index + 1}: ${gameScore}`, canvas.width / 2, canvas.height / 2 + index * 30);
   });
+
+  // Добавлено: надпись "Press Space to continue"
+  ctx.font = "30px 'Pixelify Sans', serif";
+  ctx.fillText("Press Space to continue", canvas.width / 2, canvas.height - 50);
 }
 
 function drawCharacter() {
@@ -73,9 +77,9 @@ function drawCharacter() {
 }
 
 function drawStartScreen() {
+  ctx.textAlign = "center";
   ctx.fillStyle = "#fff";
   ctx.font = "80px 'Pixelify Sans', serif";
-  ctx.textAlign = "center";
   ctx.fillText("START", canvas.width / 2, canvas.height / 2 + 50);
 }
 
@@ -148,7 +152,7 @@ function updateObstacles() {
 function gameOver() {
   isGameOver = true;
   gameStarted = false;
-  clearInterval(intervalId);
+  clearInterval(intervalId); // Очищаем интервал
   saveSessionStats(score); // Сохраняем результат
   drawGameOver(); // Отображаем экран завершения игры
 }
@@ -174,29 +178,32 @@ function resetGame() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   
   if (showStats) {
-    drawStats();
+    drawStats(); // Отображаем только статистику
   } else {
-    drawStartScreen();
+    drawStartScreen(); // Отображаем стартовый экран
   }
-  
 }
 
 // Изменено: обработчик клавиш
 document.addEventListener("keydown", (e) => {
   if (e.code === "Space") {
     if (!gameStarted && !isGameOver) {
+      // Старт игры при нажатии Space
       gameStarted = true;
       intervalId = setInterval(generateObstacle, 2000);
       gameLoop();
+    } else if (gameStarted && !isGameOver) {
+      // Прыжок работает только во время игры
+      jump();
     }
-    jump();
   }
 
-  if (e.code === "KeyR" && isGameOver) {
-    if (!showStats) {
-      resetGame(); // Переключаем на экран статистики
-    } else {
-      // Если статистика уже показана, перезапускаем игру
+  if (e.code === "KeyR") {
+    if (isGameOver && !showStats) {
+      // Первое нажатие R: переход к экрану статистики
+      resetGame();
+    } else if (showStats) {
+      // Второе нажатие R: перезагрузка игры
       showStats = false;
       resetGame();
     }
