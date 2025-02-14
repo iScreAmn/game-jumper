@@ -1,22 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
+
 body {
-  margin: 0;
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  margin: 0;
   height: 100vh;
-  background: skyblue;
-  font-family: Arial, sans-serif;
+  background: rgb(2, 0, 36);
+  background: linear-gradient(45deg, rgba(2, 0, 36, 1) 0%, rgba(51, 133, 204, 1) 52%, rgba(0, 212, 255, 1) 100%);
+  font-family: "Pixelify Sans", serif;
 }
 
 canvas {
-  /* background: url('background.png') repeat-x; */
-  background: #5aa9dbd6;
+  background: url('../img/levels/level_sq_1webp.webp') repeat-x;
   background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  
+
   border: 2px solid black;
+}
+
+.none {
+  display: none;
 }
 
 .score {
   font-size: 24px;
   margin-top: 10px;
+  color: #fff;
+}
+
+/* INFORMATION */
+
+.info {
+  position: absolute;
+  top: 550px;
+  right: 300px;
+  color: #fff;
+}
+
+.info__name {
+  font-size: 40px;
+}
+
+.info__settings {
+  color: rgb(243, 181, 106);
+}
+
+.info__desc {
+  color: #fff;
+  font-size: 20px;
+}
+
+.info__desc span {
+  color: rgb(243, 181, 106);
+}
+
+@media (max-width: 1440px) {
+  .info {
+    top: 200px;
+    right: 100px;
+  }
 }
