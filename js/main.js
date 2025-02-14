@@ -1,4 +1,4 @@
-document.fonts.ready.then(drawStartScreen);
+// document.fonts.ready.then(drawStartScreen);
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -8,6 +8,7 @@ canvas.height = 500;
 // Добавлено: переменные для управления состоянием игры
 let isGameOver = false;
 let intervalId = null;
+let showStats = false; // Новый флаг для отображения статистики
 
 const characterImg = new Image();
 characterImg.src = "./img/person.webp";
@@ -57,13 +58,13 @@ function drawStats() {
 
   // Лучший результат
   const bestScore = Math.max(...stats);
-  ctx.fillText(`Best Score: ${bestScore}`, canvas.width / 2, canvas.height / 2 + 80);
+  ctx.fillText(`Best Score: ${bestScore}`, canvas.width / 2, canvas.height / 2 - 60);
 
   // Последние 5 игр
   const recentGames = stats.slice(-5).reverse();
-  ctx.fillText("Recent Games:", canvas.width / 2, canvas.height / 2 + 120);
+  ctx.fillText("Recent Games:", canvas.width / 2, canvas.height / 2 - 20);
   recentGames.forEach((gameScore, index) => {
-    ctx.fillText(`Game ${index + 1}: ${gameScore}`, canvas.width / 2, canvas.height / 2 + 150 + index * 30);
+    ctx.fillText(`Game ${index + 1}: ${gameScore}`, canvas.width / 2, canvas.height / 2 + index * 30);
   });
 }
 
@@ -78,7 +79,7 @@ function drawStartScreen() {
   ctx.fillText("START", canvas.width / 2, canvas.height / 2 + 50);
 }
 
-// Изменено: экран завершения игры с отображением статистики
+// Изменено: экран завершения игры без статистики
 function drawGameOver() {
   ctx.fillStyle = "#fff";
   ctx.font = "40px 'Pixelify Sans', serif";
@@ -86,9 +87,6 @@ function drawGameOver() {
   ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 40);
   ctx.fillText(`Score: ${score}`, canvas.width / 2, canvas.height / 2);
   ctx.fillText("Press R to restart", canvas.width / 2, canvas.height / 2 + 40);
-
-  // Отображение статистики
-  drawStats();
 }
 
 function jump() {
@@ -152,13 +150,14 @@ function gameOver() {
   gameStarted = false;
   clearInterval(intervalId);
   saveSessionStats(score); // Сохраняем результат
-  drawGameOver();
+  drawGameOver(); // Отображаем экран завершения игры
 }
 
 // Добавлено: функция рестарта игры
 function resetGame() {
   isGameOver = false;
   gameStarted = false;
+  showStats = true; // Переключаем в режим отображения статистики
   obstacles = [];
   score = 0;
   character = {
@@ -173,7 +172,13 @@ function resetGame() {
   };
   document.getElementById("score").textContent = "0";
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  drawStartScreen();
+  
+  if (showStats) {
+    drawStats();
+  } else {
+    drawStartScreen();
+  }
+  
 }
 
 // Изменено: обработчик клавиш
@@ -188,7 +193,13 @@ document.addEventListener("keydown", (e) => {
   }
 
   if (e.code === "KeyR" && isGameOver) {
-    resetGame();
+    if (!showStats) {
+      resetGame(); // Переключаем на экран статистики
+    } else {
+      // Если статистика уже показана, перезапускаем игру
+      showStats = false;
+      resetGame();
+    }
   }
 });
 
