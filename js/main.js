@@ -20,7 +20,7 @@ obstacleImg.onload = () => console.log("Obstacle loaded!");
 let character = {
   x: 50,
   y: 280,
-  width: 70,
+  width: 80,
   height: 80,
   dy: 0,
   gravity: 0.5,
@@ -33,6 +33,40 @@ let gameSpeed = 4;
 let score = 0;
 let gameStarted = false;
 
+// Добавлено: функция для получения статистики
+function getSessionStats() {
+  const stats = sessionStorage.getItem("gameStats");
+  return stats ? JSON.parse(stats) : [];
+}
+
+// Добавлено: функция для сохранения статистики
+function saveSessionStats(score) {
+  const stats = getSessionStats();
+  stats.push(score);
+  sessionStorage.setItem("gameStats", JSON.stringify(stats));
+}
+
+// Добавлено: функция для отображения статистики
+function drawStats() {
+  const stats = getSessionStats();
+  if (stats.length === 0) return;
+
+  ctx.fillStyle = "#fff";
+  ctx.font = "20px 'Pixelify Sans', serif";
+  ctx.textAlign = "center";
+
+  // Лучший результат
+  const bestScore = Math.max(...stats);
+  ctx.fillText(`Best Score: ${bestScore}`, canvas.width / 2, canvas.height / 2 + 80);
+
+  // Последние 5 игр
+  const recentGames = stats.slice(-5).reverse();
+  ctx.fillText("Recent Games:", canvas.width / 2, canvas.height / 2 + 120);
+  recentGames.forEach((gameScore, index) => {
+    ctx.fillText(`Game ${index + 1}: ${gameScore}`, canvas.width / 2, canvas.height / 2 + 150 + index * 30);
+  });
+}
+
 function drawCharacter() {
   ctx.drawImage(characterImg, character.x, character.y, character.width, character.height);
 }
@@ -44,7 +78,7 @@ function drawStartScreen() {
   ctx.fillText("START", canvas.width / 2, canvas.height / 2 + 50);
 }
 
-// Добавлено: экран завершения игры
+// Изменено: экран завершения игры с отображением статистики
 function drawGameOver() {
   ctx.fillStyle = "#fff";
   ctx.font = "40px 'Pixelify Sans', serif";
@@ -52,6 +86,9 @@ function drawGameOver() {
   ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 40);
   ctx.fillText(`Score: ${score}`, canvas.width / 2, canvas.height / 2);
   ctx.fillText("Press R to restart", canvas.width / 2, canvas.height / 2 + 40);
+
+  // Отображение статистики
+  drawStats();
 }
 
 function jump() {
@@ -63,7 +100,7 @@ function jump() {
 
 function updateCharacter() {
   if (isGameOver) return;
-  
+
   character.y += character.dy;
   character.dy += character.gravity;
 
@@ -109,11 +146,12 @@ function updateObstacles() {
   }
 }
 
-// Добавлено: функция завершения игры
+// Изменено: функция завершения игры с сохранением статистики
 function gameOver() {
   isGameOver = true;
   gameStarted = false;
   clearInterval(intervalId);
+  saveSessionStats(score); // Сохраняем результат
   drawGameOver();
 }
 
@@ -126,7 +164,7 @@ function resetGame() {
   character = {
     x: 50,
     y: 280,
-    width: 70,
+    width: 80,
     height: 80,
     dy: 0,
     gravity: 0.5,
@@ -148,7 +186,7 @@ document.addEventListener("keydown", (e) => {
     }
     jump();
   }
-  
+
   if (e.code === "KeyR" && isGameOver) {
     resetGame();
   }
@@ -157,7 +195,7 @@ document.addEventListener("keydown", (e) => {
 // Изменено: игровой цикл
 function gameLoop() {
   if (isGameOver) return;
-  
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawCharacter();
   updateCharacter();
