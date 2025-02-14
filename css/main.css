@@ -44,15 +44,18 @@ canvas {
 
 .info__name {
   font-size: 40px;
+  margin: 0 0 30px;
 }
 
 .info__settings {
   color: rgb(243, 181, 106);
+  margin: 0 0 30px;
 }
 
 .info__desc {
   color: #fff;
   font-size: 20px;
+  margin: 0 0 5px;
 }
 
 .info__desc span {
