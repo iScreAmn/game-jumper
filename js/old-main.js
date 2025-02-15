@@ -1,4 +1,3 @@
-document.fonts.ready.then(drawStartScreen);
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -41,6 +40,8 @@ let gameSpeed = 4; // Начальная скорость игры
 let score = 0;
 let gameStarted = false;
 
+
+
 // Добавлено: функция для получения статистики
 function getSessionStats() {
   const stats = sessionStorage.getItem("gameStats");
@@ -65,24 +66,27 @@ function drawStats() {
 
   // Лучший результат
   const bestScore = Math.max(...stats);
-  ctx.fillText(`Best Score: ${bestScore}`, canvas.width / 2, canvas.height / 2 - 60);
+  ctx.fillText(`Best Score: ${bestScore}`, canvas.width / 2, canvas.height / 2 - 70);
 
   // Последние 5 игр
   const recentGames = stats.slice(-5).reverse();
-  ctx.fillText("Recent Games:", canvas.width / 2, canvas.height / 2 - 20);
+  ctx.fillText("Recent Games:", canvas.width / 2, canvas.height / 2 - 30);
   recentGames.forEach((gameScore, index) => {
     ctx.fillText(`Game ${index + 1}: ${gameScore}`, canvas.width / 2, canvas.height / 2 + index * 30);
   });
 
   // Добавлено: надпись "Press R to continue"
   ctx.font = "30px 'Pixelify Sans', serif";
-  ctx.fillText("Press Space to continue", canvas.width / 2, canvas.height - 50);
+  ctx.fillText("Press R to restart", canvas.width / 2, canvas.height - 50);
 }
 
 function drawCharacter() {
   ctx.drawImage(characterImg, character.x, character.y, character.width, character.height);
 }
 
+
+// Titles
+document.fonts.ready.then(drawStartScreen);
 function drawStartScreen() {
   ctx.textAlign = "center";
   ctx.fillStyle = "#fff";
@@ -97,7 +101,7 @@ function drawGameOver() {
   ctx.textAlign = "center";
   ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 40);
   ctx.fillText(`Score: ${score}`, canvas.width / 2, canvas.height / 2);
-  ctx.fillText("Press R to restart", canvas.width / 2, canvas.height / 2 + 40);
+  ctx.fillText("Press R to continue", canvas.width / 2, canvas.height / 2 + 40);
 }
 
 function jump() {
@@ -223,11 +227,19 @@ document.addEventListener("keydown", (e) => {
   if (e.code === "KeyR") {
     if (isGameOver && !showStats) {
       // Первое нажатие R: переход к экрану статистики
-      resetGame();
+      resetGame(); // Показываем статистику
     } else if (showStats) {
-      // Второе нажатие R: перезагрузка игры
-      showStats = false;
-      resetGame();
+      // Второе нажатие R: возврат к стартовому экрану
+      showStats = false; // Сбрасываем флаг статистики
+      ctx.clearRect(0, 0, canvas.width, canvas.height); // Очищаем холст
+      drawStartScreen(); // Явно рисуем стартовый экран
+      
+      // Полный сброс состояния игры
+      obstacles = [];
+      score = 0;
+      gameSpeed = 4;
+      isBackgroundChanged = false;
+      document.getElementById("score").textContent = "0";
     }
   }
 });
