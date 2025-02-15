@@ -14,13 +14,20 @@ body {
 }
 
 canvas {
-  background: url('../img/levels/level_sq_1webp.webp') repeat-x;
+  /* background: url('../img/levels/level_sq_1.webp') repeat-x;
+  background: url('../img/levels/level_sq_2.webp') repeat-x;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat; */
+  /* border: 2px solid black; */
+}
+
+canvas {
+  border: 2px solid black;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  
-
-  border: 2px solid black;
+  transition: background-image 0.8s ease-in-out;
 }
 
 .none {
