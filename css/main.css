@@ -28,16 +28,20 @@ canvas {
   background-position: center;
   background-repeat: no-repeat;
   transition: background-image 0.8s ease-in-out;
-}
-
-.none {
-  display: none;
+  position: relative;
 }
 
 .score {
   font-size: 24px;
   margin-top: 10px;
   color: #fff;
+  position: absolute;
+  top: 15%;
+  left: 33.5%;
+}
+
+.none {
+  display: none;
 }
 
 /* INFORMATION */
