@@ -70,7 +70,7 @@ function drawStats() {
 
   // Последние 5 игр
   const recentGames = stats.slice(-5).reverse();
-  ctx.fillText("Recent Games:", canvas.width / 2, canvas.height / 2 - 30);
+  ctx.fillText("Recent Jumps:", canvas.width / 2, canvas.height / 2 - 30);
   recentGames.forEach((gameScore, index) => {
     ctx.fillText(`Game ${index + 1}: ${gameScore}`, canvas.width / 2, canvas.height / 2 + index * 30);
   });
@@ -90,7 +90,7 @@ document.fonts.ready.then(drawStartScreen);
 function drawStartScreen() {
   ctx.textAlign = "center";
   ctx.fillStyle = "#fff";
-  ctx.font = "80px 'Pixelify Sans', serif";
+  ctx.font = "80px 'Pixelify Sans' ";
   ctx.fillText("START", canvas.width / 2, canvas.height / 2 + 50);
 }
 
@@ -98,10 +98,11 @@ function drawStartScreen() {
 function drawGameOver() {
   ctx.fillStyle = "#fff";
   ctx.font = "40px 'Pixelify Sans', serif";
-  ctx.textAlign = "center";
-  ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 40);
+  ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 50);
+  ctx.font = "30px 'Pixelify Sans', serif";
   ctx.fillText(`Score: ${score}`, canvas.width / 2, canvas.height / 2);
-  ctx.fillText("Press R to continue", canvas.width / 2, canvas.height / 2 + 40);
+  ctx.font = "30px 'Pixelify Sans', serif";
+  ctx.fillText("Press R to continue", canvas.width / 2, canvas.height - 50);
 }
 
 function jump() {

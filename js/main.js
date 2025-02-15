@@ -1,4 +1,3 @@
-document.fonts.ready.then(drawStartScreen);
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -22,6 +21,9 @@ const obstacleImg = new Image();
 obstacleImg.src = "./img/obstracle.png";
 obstacleImg.onload = () => console.log("Obstacle loaded!");
 
+const initialObstacleInterval = 2000; // Начальный интервал (2 секунды)
+let obstacleInterval = initialObstacleInterval; // Текущий интервал
+
 let character = {
   x: 50,
   y: 280,
@@ -29,7 +31,7 @@ let character = {
   height: 80,
   dy: 0,
   gravity: 0.5,
-  jumpPower: -12,
+  jumpPower: -12.5,
   onGround: true,
 };
 
@@ -37,6 +39,8 @@ let obstacles = [];
 let gameSpeed = 4; // Начальная скорость игры
 let score = 0;
 let gameStarted = false;
+
+
 
 // Добавлено: функция для получения статистики
 function getSessionStats() {
@@ -62,28 +66,31 @@ function drawStats() {
 
   // Лучший результат
   const bestScore = Math.max(...stats);
-  ctx.fillText(`Best Score: ${bestScore}`, canvas.width / 2, canvas.height / 2 - 60);
+  ctx.fillText(`Best Score: ${bestScore}`, canvas.width / 2, canvas.height / 2 - 70);
 
   // Последние 5 игр
   const recentGames = stats.slice(-5).reverse();
-  ctx.fillText("Recent Games:", canvas.width / 2, canvas.height / 2 - 20);
+  ctx.fillText("Recent Jumps:", canvas.width / 2, canvas.height / 2 - 30);
   recentGames.forEach((gameScore, index) => {
     ctx.fillText(`Game ${index + 1}: ${gameScore}`, canvas.width / 2, canvas.height / 2 + index * 30);
   });
 
   // Добавлено: надпись "Press R to continue"
   ctx.font = "30px 'Pixelify Sans', serif";
-  ctx.fillText("Press Space to continue", canvas.width / 2, canvas.height - 50);
+  ctx.fillText("Press R to restart", canvas.width / 2, canvas.height - 50);
 }
 
 function drawCharacter() {
   ctx.drawImage(characterImg, character.x, character.y, character.width, character.height);
 }
 
+
+// Titles
+document.fonts.ready.then(drawStartScreen);
 function drawStartScreen() {
   ctx.textAlign = "center";
   ctx.fillStyle = "#fff";
-  ctx.font = "80px 'Pixelify Sans', serif";
+  ctx.font = "80px 'Pixelify Sans' ";
   ctx.fillText("START", canvas.width / 2, canvas.height / 2 + 50);
 }
 
@@ -91,10 +98,11 @@ function drawStartScreen() {
 function drawGameOver() {
   ctx.fillStyle = "#fff";
   ctx.font = "40px 'Pixelify Sans', serif";
-  ctx.textAlign = "center";
-  ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 40);
+  ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 50);
+  ctx.font = "30px 'Pixelify Sans', serif";
   ctx.fillText(`Score: ${score}`, canvas.width / 2, canvas.height / 2);
-  ctx.fillText("Press R to restart", canvas.width / 2, canvas.height / 2 + 40);
+  ctx.font = "30px 'Pixelify Sans', serif";
+  ctx.fillText("Press R to continue", canvas.width / 2, canvas.height - 50);
 }
 
 function jump() {
@@ -131,39 +139,14 @@ function updateObstacles() {
 
       // Проверка на 15 очков и изменение фона/скорости
       if (score >= 15 && !isBackgroundChanged) {
-        // Создаем элемент-оверлей, который накроет canvas
-        const overlay = document.createElement("div");
-        overlay.style.position = "absolute";
-        overlay.style.top = canvas.offsetTop + "px";
-        overlay.style.left = canvas.offsetLeft + "px";
-        overlay.style.width = canvas.width + "px";
-        overlay.style.height = canvas.height + "px";
-        overlay.style.backgroundImage = "url('../img/levels/level_sq_2.webp')";
-        overlay.style.backgroundSize = "cover";
-        overlay.style.opacity = "0";
-        overlay.style.transition = "opacity 2s ease-in-out";
-        overlay.style.pointerEvents = "none"; // Чтобы не блокировать клики
-        
-        // Добавляем overlay в родительский элемент canvas
-        canvas.parentNode.appendChild(overlay);
-        
-        // Принудительный рефлоу, чтобы браузер зафиксировал начальное состояние
-        void overlay.offsetWidth;
-        
-        // Запускаем переход: делаем overlay видимым
-        overlay.style.opacity = "1";
-        
-        // По окончании анимации (2 сек) устанавливаем фон для canvas и убираем overlay
-        setTimeout(() => {
-          canvas.style.backgroundImage = "url('../img/levels/level_sq_2.webp')";
-          canvas.parentNode.removeChild(overlay);
-        }, 1000);
-        
-        gameSpeed = 5; // Увеличиваем скорость
+        canvas.style.backgroundImage = "url('../img/levels/level_sq_2.webp')";
+        gameSpeed = 6; // Увеличиваем скорость
+        obstacleInterval = 1000; // Уменьшаем интервал генерации
+        clearInterval(intervalId); // Очищаем старый интервал
+        intervalId = setInterval(generateObstacle, obstacleInterval); // Устанавливаем новый интервал
         isBackgroundChanged = true; // Флаг, чтобы изменения произошли только один раз
       }
       continue;
-      
     }
 
     ctx.drawImage(
@@ -210,7 +193,7 @@ function resetGame() {
     height: 80,
     dy: 0,
     gravity: 0.5,
-    jumpPower: -12,
+    jumpPower: -12.5,
     onGround: true,
   };
   document.getElementById("score").textContent = "0";
@@ -245,11 +228,19 @@ document.addEventListener("keydown", (e) => {
   if (e.code === "KeyR") {
     if (isGameOver && !showStats) {
       // Первое нажатие R: переход к экрану статистики
-      resetGame();
+      resetGame(); // Показываем статистику
     } else if (showStats) {
-      // Второе нажатие R: перезагрузка игры
-      showStats = false;
-      resetGame();
+      // Второе нажатие R: возврат к стартовому экрану
+      showStats = false; // Сбрасываем флаг статистики
+      ctx.clearRect(0, 0, canvas.width, canvas.height); // Очищаем холст
+      drawStartScreen(); // Явно рисуем стартовый экран
+      
+      // Полный сброс состояния игры
+      obstacles = [];
+      score = 0;
+      gameSpeed = 4;
+      isBackgroundChanged = false;
+      document.getElementById("score").textContent = "0";
     }
   }
 });
