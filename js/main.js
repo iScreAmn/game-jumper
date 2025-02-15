@@ -5,10 +5,14 @@ const ctx = canvas.getContext("2d");
 canvas.width = 500;
 canvas.height = 500;
 
+// Устанавливаем начальный фон
+canvas.style.backgroundImage = "url('../img/levels/level_sq_1.webp')";
+
 // Добавлено: переменные для управления состоянием игры
 let isGameOver = false;
 let intervalId = null;
 let showStats = false; // Новый флаг для отображения статистики
+let isBackgroundChanged = false; // Флаг для отслеживания смены фона
 
 const characterImg = new Image();
 characterImg.src = "./img/person.webp";
@@ -24,13 +28,13 @@ let character = {
   width: 80,
   height: 80,
   dy: 0,
-  gravity: 0.4,
+  gravity: 0.5,
   jumpPower: -12,
   onGround: true,
 };
 
 let obstacles = [];
-let gameSpeed = 4;
+let gameSpeed = 4; // Начальная скорость игры
 let score = 0;
 let gameStarted = false;
 
@@ -67,7 +71,7 @@ function drawStats() {
     ctx.fillText(`Game ${index + 1}: ${gameScore}`, canvas.width / 2, canvas.height / 2 + index * 30);
   });
 
-  // Добавлено: надпись "Press Space to continue"
+  // Добавлено: надпись "Press R to continue"
   ctx.font = "30px 'Pixelify Sans', serif";
   ctx.fillText("Press Space to continue", canvas.width / 2, canvas.height - 50);
 }
@@ -124,7 +128,42 @@ function updateObstacles() {
       obstacles.splice(i, 1);
       score++;
       document.getElementById("score").textContent = score;
+
+      // Проверка на 15 очков и изменение фона/скорости
+      if (score >= 15 && !isBackgroundChanged) {
+        // Создаем элемент-оверлей, который накроет canvas
+        const overlay = document.createElement("div");
+        overlay.style.position = "absolute";
+        overlay.style.top = canvas.offsetTop + "px";
+        overlay.style.left = canvas.offsetLeft + "px";
+        overlay.style.width = canvas.width + "px";
+        overlay.style.height = canvas.height + "px";
+        overlay.style.backgroundImage = "url('../img/levels/level_sq_2.webp')";
+        overlay.style.backgroundSize = "cover";
+        overlay.style.opacity = "0";
+        overlay.style.transition = "opacity 2s ease-in-out";
+        overlay.style.pointerEvents = "none"; // Чтобы не блокировать клики
+        
+        // Добавляем overlay в родительский элемент canvas
+        canvas.parentNode.appendChild(overlay);
+        
+        // Принудительный рефлоу, чтобы браузер зафиксировал начальное состояние
+        void overlay.offsetWidth;
+        
+        // Запускаем переход: делаем overlay видимым
+        overlay.style.opacity = "1";
+        
+        // По окончании анимации (2 сек) устанавливаем фон для canvas и убираем overlay
+        setTimeout(() => {
+          canvas.style.backgroundImage = "url('../img/levels/level_sq_2.webp')";
+          canvas.parentNode.removeChild(overlay);
+        }, 1000);
+        
+        gameSpeed = 5; // Увеличиваем скорость
+        isBackgroundChanged = true; // Флаг, чтобы изменения произошли только один раз
+      }
       continue;
+      
     }
 
     ctx.drawImage(
@@ -176,7 +215,12 @@ function resetGame() {
   };
   document.getElementById("score").textContent = "0";
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
+
+  // Сбрасываем фон и скорость
+  canvas.style.backgroundImage = "url('../img/levels/level_sq_1.webp')";
+  gameSpeed = 4;
+  isBackgroundChanged = false;
+
   if (showStats) {
     drawStats(); // Отображаем только статистику
   } else {
