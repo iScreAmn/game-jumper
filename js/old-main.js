@@ -22,7 +22,8 @@ const obstacleImg = new Image();
 obstacleImg.src = "./img/obstracle.png";
 obstacleImg.onload = () => console.log("Obstacle loaded!");
 
-
+const initialObstacleInterval = 2000; // Начальный интервал (2 секунды)
+let obstacleInterval = initialObstacleInterval; // Текущий интервал
 
 let character = {
   x: 50,
@@ -31,7 +32,7 @@ let character = {
   height: 80,
   dy: 0,
   gravity: 0.5,
-  jumpPower: -13,
+  jumpPower: -12.5,
   onGround: true,
 };
 
@@ -135,7 +136,9 @@ function updateObstacles() {
       if (score >= 15 && !isBackgroundChanged) {
         canvas.style.backgroundImage = "url('../img/levels/level_sq_2.webp')";
         gameSpeed = 6; // Увеличиваем скорость
-        intervalId = setInterval(generateObstacle, 2000);
+        obstacleInterval = 1000; // Уменьшаем интервал генерации
+        clearInterval(intervalId); // Очищаем старый интервал
+        intervalId = setInterval(generateObstacle, obstacleInterval); // Устанавливаем новый интервал
         isBackgroundChanged = true; // Флаг, чтобы изменения произошли только один раз
       }
       continue;
@@ -185,7 +188,7 @@ function resetGame() {
     height: 80,
     dy: 0,
     gravity: 0.5,
-    jumpPower: -13,
+    jumpPower: -12.5,
     onGround: true,
   };
   document.getElementById("score").textContent = "0";
