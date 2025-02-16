@@ -17,7 +17,6 @@ const characters = [
   { name: "Amber", src: "./img/characters/character.webp" },
   { name: "Mario", src: "./img/characters/mario.webp" },
   { name: "Turtle", src: "./img/characters/turtle.webp" },
-  // { name: "Ksu", src: "./img/characters/ksu.webp" }
 ];
 let selectedCharacterIndex = 0;
 const characterImg = new Image();
@@ -71,14 +70,8 @@ function drawStartScreen() {
       }
       ctx.fillText(char.name, canvas.width/2, yPos);
     });
-
-    // Инструкция
-    // ctx.font = "20px 'Pixelify Sans'";
-    // ctx.fillText("Use ↑ ↓ to select, ENTER to start", canvas.width/2, 400);
-    
   }).catch(error => {
     console.error("Font load error:", error);
-    // Fallback rendering
   });
 }
 
@@ -95,9 +88,7 @@ document.addEventListener("keydown", (e) => {
         drawStartScreen();
         break;
       case "Enter":
-        // Загрузка выбранного персонажа
         characterImg.src = characters[selectedCharacterIndex].src;
-        // Запуск игры
         gameStarted = true;
         intervalId = setInterval(generateObstacle, 2000);
         gameLoop();
@@ -108,12 +99,10 @@ document.addEventListener("keydown", (e) => {
   // Обработка прыжка
   if (e.code === "Space") {
     if (!gameStarted && !isGameOver) {
-      // Старт игры при нажатии Space
       gameStarted = true;
       intervalId = setInterval(generateObstacle, 2000);
       gameLoop();
     } else if (gameStarted && !isGameOver) {
-      // Прыжок работает только во время игры
       jump();
     }
   }
@@ -121,15 +110,11 @@ document.addEventListener("keydown", (e) => {
   // Обработка рестарта
   if (e.code === "KeyR") {
     if (isGameOver && !showStats) {
-      // Первое нажатие R: переход к экрану статистики
-      resetGame(); // Показываем статистику
+      resetGame();
     } else if (showStats) {
-      // Второе нажатие R: возврат к стартовому экрану
-      showStats = false; // Сбрасываем флаг статистики
-      ctx.clearRect(0, 0, canvas.width, canvas.height); // Очищаем холст
-      drawStartScreen(); // Явно рисуем стартовый экран
-      
-      // Полный сброс состояния игры
+      showStats = false;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawStartScreen();
       obstacles = [];
       score = 0;
       gameSpeed = 4;
@@ -160,29 +145,38 @@ function updateCharacter() {
   }
 }
 
-// Генерация препятствий
+// Генерация случайных препятствий (только на уровне земли)
 function generateObstacle() {
-  obstacles.push({ x: canvas.width, y: 300, width: 40, height: 50 });
+  const obstacleWidth = Math.floor(Math.random() * (60 - 30 + 1)) + 30;
+  const obstacleSpeed = Math.floor(Math.random() * (8 - 4 + 1)) + 4;
+  const obstacleY = 300; // Фиксированная высота (уровень земли)
+
+  obstacles.push({
+    x: canvas.width,
+    y: obstacleY,
+    width: obstacleWidth,
+    height: 50, // Фиксированная высота
+    speed: obstacleSpeed,
+  });
 }
 
 // Обновление препятствий
 function updateObstacles() {
   for (let i = obstacles.length - 1; i >= 0; i--) {
-    obstacles[i].x -= gameSpeed;
+    obstacles[i].x -= obstacles[i].speed;
 
     if (obstacles[i].x + obstacles[i].width < 0) {
       obstacles.splice(i, 1);
       score++;
       document.getElementById("score").textContent = score;
 
-      // Проверка на 15 очков и изменение фона/скорости
       if (score >= 10 && !isBackgroundChanged) {
         canvas.style.backgroundImage = "url('../img/levels/level_sq_2.webp')";
-        gameSpeed = 6; // Увеличиваем скорость
-        obstacleInterval = 900; // Уменьшаем интервал генерации
-        clearInterval(intervalId); // Очищаем старый интервал
-        intervalId = setInterval(generateObstacle, obstacleInterval); // Устанавливаем новый интервал
-        isBackgroundChanged = true; // Флаг, чтобы изменения произошли только один раз
+        gameSpeed = 6;
+        obstacleInterval = 900;
+        clearInterval(intervalId);
+        intervalId = setInterval(generateObstacle, obstacleInterval);
+        isBackgroundChanged = true;
       }
       continue;
     }
@@ -195,7 +189,6 @@ function updateObstacles() {
       obstacles[i].height
     );
 
-    // Обработка столкновений
     if (
       !isGameOver &&
       character.x < obstacles[i].x + obstacles[i].width &&
@@ -212,16 +205,16 @@ function updateObstacles() {
 function gameOver() {
   isGameOver = true;
   gameStarted = false;
-  clearInterval(intervalId); // Очищаем интервал
-  saveSessionStats(score); // Сохраняем результат
-  drawGameOver(); // Отображаем экран завершения игры
+  clearInterval(intervalId);
+  saveSessionStats(score);
+  drawGameOver();
 }
 
 // Функция рестарта игры
 function resetGame() {
   isGameOver = false;
   gameStarted = false;
-  showStats = true; // Переключаем в режим отображения статистики
+  showStats = true;
   obstacles = [];
   score = 0;
   character = {
@@ -237,15 +230,14 @@ function resetGame() {
   document.getElementById("score").textContent = "0";
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Сбрасываем фон и скорость
   canvas.style.backgroundImage = "url('../img/levels/level_sq_1.webp')";
   gameSpeed = 4;
   isBackgroundChanged = false;
 
   if (showStats) {
-    drawStats(); // Отображаем только статистику
+    drawStats();
   } else {
-    drawStartScreen(); // Отображаем стартовый экран
+    drawStartScreen();
   }
 }
 
@@ -271,18 +263,15 @@ function drawStats() {
   ctx.font = "20px 'Pixelify Sans', serif";
   ctx.textAlign = "center";
 
-  // Лучший результат
   const bestScore = Math.max(...stats);
   ctx.fillText(`Best Score: ${bestScore}`, canvas.width / 2, canvas.height / 2 - 70);
 
-  // Последние 5 игр
   const recentGames = stats.slice(-5).reverse();
   ctx.fillText("Recent Jumps:", canvas.width / 2, canvas.height / 2 - 30);
   recentGames.forEach((gameScore, index) => {
     ctx.fillText(`Game ${index + 1}: ${gameScore}`, canvas.width / 2, canvas.height / 2 + index * 30);
   });
 
-  // Надпись "Press R to continue"
   ctx.font = "30px 'Pixelify Sans', serif";
   ctx.fillText("Press R to restart", canvas.width / 2, canvas.height - 50);
 }
