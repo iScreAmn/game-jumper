@@ -86,21 +86,12 @@ function drawCharacter() {
 
 
 // Titles
+document.fonts.ready.then(drawStartScreen);
 function drawStartScreen() {
-  // Проверяем, загружены ли шрифты
-  document.fonts.ready.then(() => {
-    ctx.textAlign = "center";
-    ctx.fillStyle = "#fff";
-    ctx.font = "80px 'Pixelify Sans'"; // Убедимся, что шрифт загружен
-    ctx.fillText("START", canvas.width / 2, canvas.height / 2 + 50);
-  }).catch((error) => {
-    console.error("Ошибка загрузки шрифта:", error);
-    // Если шрифт не загрузился, используем запасной вариант
-    ctx.textAlign = "center";
-    ctx.fillStyle = "#fff";
-    ctx.font = "80px serif"; // Запасной шрифт
-    ctx.fillText("START", canvas.width / 2, canvas.height / 2 + 50);
-  });
+  ctx.textAlign = "center";
+  ctx.fillStyle = "#fff";
+  ctx.font = "80px 'Pixelify Sans' ";
+  ctx.fillText("START", canvas.width / 2, canvas.height / 2 + 50);
 }
 
 // Изменено: экран завершения игры без статистики
