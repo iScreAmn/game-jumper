@@ -137,6 +137,9 @@ function generateObstacle() {
   obstacles.push({ x: canvas.width, y: 300, width: 40, height: 50 });
 }
 
+const INITIAL_GRADIENT = "linear-gradient(45deg, rgba(2, 0, 36, 1) 0%, rgba(170, 0, 63, 1) 52%, rgba(18, 33, 71, 1) 100%)";
+const SECOND_GRADIENT = "linear-gradient(45deg, rgba(19,0,56,1) 0%, rgba(197,9,235,1) 52%, rgba(124,91,237,1) 100%)";
+
 function updateObstacles() {
   for (let i = obstacles.length - 1; i >= 0; i--) {
     obstacles[i].x -= gameSpeed;
@@ -149,6 +152,7 @@ function updateObstacles() {
       // Проверка на 15 очков и изменение фона/скорости
       if (score >= 15 && !isBackgroundChanged) {
         canvas.style.backgroundImage = "url('../img/levels/level_sq_2.webp')";
+        document.body.style.background = SECOND_GRADIENT; // Добавляет градиент второго уровня
         gameSpeed = 6; // Увеличиваем скорость
         obstacleInterval = 1000; // Уменьшаем интервал генерации
         clearInterval(intervalId); // Очищаем старый интервал
@@ -190,6 +194,7 @@ function gameOver() {
 
 // Добавлено: функция рестарта игры
 function resetGame() {
+  document.body.style.background = INITIAL_GRADIENT; // Сбрасывае градиент второго уровня до первого
   isGameOver = false;
   gameStarted = false;
   showStats = true; // Переключаем в режим отображения статистики
