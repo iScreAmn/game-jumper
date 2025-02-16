@@ -14,11 +14,11 @@ let showStats = false; // Новый флаг для отображения ст
 let isBackgroundChanged = false; // Флаг для отслеживания смены фона
 
 const characterImg = new Image();
-characterImg.src = "./img/person.webp";
+characterImg.src = "./img/characters/character.webp";
 characterImg.onload = () => console.log("Character loaded!");
 
 const obstacleImg = new Image();
-obstacleImg.src = "./img/obstracle.png";
+obstacleImg.src = "./img/obstacles/obstacle.webp";
 obstacleImg.onload = () => console.log("Obstacle loaded!");
 
 const initialObstacleInterval = 2000; // Начальный интервал (2 секунды)
@@ -27,8 +27,8 @@ let obstacleInterval = initialObstacleInterval; // Текущий интерва
 let character = {
   x: 50,
   y: 280,
-  width: 80,
-  height: 80,
+  width: 45,
+  height: 70,
   dy: 0,
   gravity: 0.5,
   jumpPower: -12.5,
@@ -203,8 +203,8 @@ function resetGame() {
   character = {
     x: 50,
     y: 280,
-    width: 80,
-    height: 80,
+    width: 45,
+    height: 70,
     dy: 0,
     gravity: 0.5,
     jumpPower: -12.5,
