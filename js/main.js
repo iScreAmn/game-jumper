@@ -105,13 +105,36 @@ document.addEventListener("keydown", (e) => {
   }
 
   // Обработка прыжка
-  if (e.code === "Space" && gameStarted && !isGameOver) {
-    jump();
+  if (e.code === "Space") {
+    if (!gameStarted && !isGameOver) {
+      // Старт игры при нажатии Space
+      gameStarted = true;
+      intervalId = setInterval(generateObstacle, 2000);
+      gameLoop();
+    } else if (gameStarted && !isGameOver) {
+      // Прыжок работает только во время игры
+      jump();
+    }
   }
 
   // Обработка рестарта
-  if (e.code === "KeyR" && isGameOver) {
-    resetGame();
+  if (e.code === "KeyR") {
+    if (isGameOver && !showStats) {
+      // Первое нажатие R: переход к экрану статистики
+      resetGame(); // Показываем статистику
+    } else if (showStats) {
+      // Второе нажатие R: возврат к стартовому экрану
+      showStats = false; // Сбрасываем флаг статистики
+      ctx.clearRect(0, 0, canvas.width, canvas.height); // Очищаем холст
+      drawStartScreen(); // Явно рисуем стартовый экран
+      
+      // Полный сброс состояния игры
+      obstacles = [];
+      score = 0;
+      gameSpeed = 4;
+      isBackgroundChanged = false;
+      document.getElementById("score").textContent = "0";
+    }
   }
 });
 
