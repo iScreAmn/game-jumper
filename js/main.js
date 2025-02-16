@@ -14,9 +14,10 @@ let isBackgroundChanged = false;
 
 // Персонажи
 const characters = [
-  { name: "Character", src: "./img/characters/character.webp" },
+  { name: "Amber", src: "./img/characters/character.webp" },
   { name: "Mario", src: "./img/characters/mario.webp" },
-  { name: "Turtle", src: "./img/characters/turtle.webp" }
+  { name: "Turtle", src: "./img/characters/turtle.webp" },
+  // { name: "Ksu", src: "./img/characters/ksu.webp" }
 ];
 let selectedCharacterIndex = 0;
 const characterImg = new Image();
@@ -32,7 +33,7 @@ const obstacleImg = new Image();
 obstacleImg.src = "./img/obstacles/obstacle.webp";
 
 // Настройки игры
-const initialObstacleInterval = 2000;
+const initialObstacleInterval = 1000;
 let obstacleInterval = initialObstacleInterval;
 let character = {
   x: 50,
@@ -58,12 +59,12 @@ function drawStartScreen() {
     
     // Заголовок
     ctx.font = "80px 'Pixelify Sans'";
-    ctx.fillText("START", canvas.width / 2, 100);
+    ctx.fillText("START", canvas.width / 2, 250);
 
     // Список персонажей
-    ctx.font = "40px 'Pixelify Sans'";
+    ctx.font = "30px 'Pixelify Sans'";
     characters.forEach((char, index) => {
-      const yPos = 200 + index * 60;
+      const yPos = 350 + index * 50;
       // Выделение выбранного персонажа
       if(index === selectedCharacterIndex) {
         ctx.fillText(">", canvas.width/2 - 100, yPos);
@@ -72,8 +73,8 @@ function drawStartScreen() {
     });
 
     // Инструкция
-    ctx.font = "20px 'Pixelify Sans'";
-    ctx.fillText("Use ↑ ↓ to select, ENTER to start", canvas.width/2, 400);
+    // ctx.font = "20px 'Pixelify Sans'";
+    // ctx.fillText("Use ↑ ↓ to select, ENTER to start", canvas.width/2, 400);
     
   }).catch(error => {
     console.error("Font load error:", error);
@@ -175,10 +176,10 @@ function updateObstacles() {
       document.getElementById("score").textContent = score;
 
       // Проверка на 15 очков и изменение фона/скорости
-      if (score >= 5 && !isBackgroundChanged) {
+      if (score >= 10 && !isBackgroundChanged) {
         canvas.style.backgroundImage = "url('../img/levels/level_sq_2.webp')";
         gameSpeed = 6; // Увеличиваем скорость
-        obstacleInterval = 1000; // Уменьшаем интервал генерации
+        obstacleInterval = 900; // Уменьшаем интервал генерации
         clearInterval(intervalId); // Очищаем старый интервал
         intervalId = setInterval(generateObstacle, obstacleInterval); // Устанавливаем новый интервал
         isBackgroundChanged = true; // Флаг, чтобы изменения произошли только один раз

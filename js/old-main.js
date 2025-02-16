@@ -226,6 +226,7 @@ function resetGame() {
 
 // Изменено: обработчик клавиш
 document.addEventListener("keydown", (e) => {
+  
   if (e.code === "Space") {
     if (!gameStarted && !isGameOver) {
       // Старт игры при нажатии Space
