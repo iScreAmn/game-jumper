@@ -32,6 +32,10 @@ characters.forEach(char => {
 const obstacleImg = new Image();
 obstacleImg.src = "./img/obstacles/obstacle.webp";
 
+const INITIAL_GRADIENT = "linear-gradient(45deg, rgba(2, 0, 36, 1) 0%, rgba(170, 0, 63, 1) 52%, rgba(18, 33, 71, 1) 100%)";
+const SECOND_GRADIENT = "linear-gradient(45deg, rgba(19,0,56,1) 0%, rgba(197,9,235,1) 52%, rgba(124,91,237,1) 100%)";
+const THIRD_GRADIENT = "linear-gradient(45deg, rgba(84,176,97,1) 0%, rgba(93,210,240,1) 46%, rgba(51,126,169,1) 100%)";
+
 // Настройки игры
 const initialObstacleInterval = 1000;
 let obstacleInterval = initialObstacleInterval;
@@ -172,21 +176,24 @@ function updateObstacles() {
       score++;
       document.getElementById("score").textContent = score;
 
-      // Настройка первого уровня (5 очков)
-      if (score >= 1 && !isBackgroundChanged) {
+      // Настройка второго уровня (5 очков)
+      if (score >= 10 && !isBackgroundChanged) {
         canvas.style.backgroundImage = "url('../img/levels/level-2.webp')";
-        gameSpeed = 4;
-        obstacleInterval = 1200;
+        document.body.style.background = SECOND_GRADIENT; // Добавляет градиент второго уровня
+        gameSpeed = 5;
+        obstacleInterval = 1000;
         clearInterval(intervalId);
         intervalId = setInterval(generateObstacle, obstacleInterval);
         isBackgroundChanged = true;
       }
 
-      // Настройка второго уровня (15 очков)
-      if (score >= 2 && !isSecondLevelChanged) {
+      // Настройка третьего уровня (15 очков)
+      if (score >= 20 && !isSecondLevelChanged) {
         canvas.style.backgroundImage = "url('../img/levels/level-3-demo.webp')"; // Новый фон
-        gameSpeed = 4.5; // Увеличиваем скорость
-        obstacleInterval = 1000; // Уменьшаем интервал генерации
+        document.body.style.background = THIRD_GRADIENT;
+        gameSpeed = 4.1; // Увеличиваем скорость
+        obstacleInterval = 1200; // Уменьшаем интервал генерации
+        character.jumpPower = -10.5;
         clearInterval(intervalId);
         intervalId = setInterval(generateObstacle, obstacleInterval);
         isSecondLevelChanged = true; // Флаг, чтобы изменения произошли только один раз
@@ -225,6 +232,7 @@ function gameOver() {
 
 // Функция рестарта игры
 function resetGame() {
+  document.body.style.background = INITIAL_GRADIENT;
   isGameOver = false;
   gameStarted = false;
   showStats = true;
