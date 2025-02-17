@@ -4,13 +4,14 @@ canvas.width = 500;
 canvas.height = 500;
 
 // Устанавливаем начальный фон
-canvas.style.backgroundImage = "url('../img/levels/level_sq_1.webp')";
+canvas.style.backgroundImage = "url('../img/levels/level-1.webp')";
 
 // Состояния игры
 let isGameOver = false;
 let intervalId = null;
 let showStats = false;
 let isBackgroundChanged = false;
+let isSecondLevelChanged = false; // Флаг для второго уровня
 
 // Персонажи
 const characters = [
@@ -41,7 +42,7 @@ let character = {
   height: 70,
   dy: 0,
   gravity: 0.5,
-  jumpPower: -12.5,
+  jumpPower: -10.5,
   onGround: true,
 };
 let obstacles = [];
@@ -119,6 +120,7 @@ document.addEventListener("keydown", (e) => {
       score = 0;
       gameSpeed = 4;
       isBackgroundChanged = false;
+      isSecondLevelChanged = false; // Сбрасываем флаг второго уровня
       document.getElementById("score").textContent = "0";
     }
   }
@@ -170,13 +172,24 @@ function updateObstacles() {
       score++;
       document.getElementById("score").textContent = score;
 
-      if (score >= 10 && !isBackgroundChanged) {
-        canvas.style.backgroundImage = "url('../img/levels/level_sq_2.webp')";
-        gameSpeed = 6;
-        obstacleInterval = 900;
+      // Настройка первого уровня (5 очков)
+      if (score >= 1 && !isBackgroundChanged) {
+        canvas.style.backgroundImage = "url('../img/levels/level-2.webp')";
+        gameSpeed = 4;
+        obstacleInterval = 1200;
         clearInterval(intervalId);
         intervalId = setInterval(generateObstacle, obstacleInterval);
         isBackgroundChanged = true;
+      }
+
+      // Настройка второго уровня (15 очков)
+      if (score >= 2 && !isSecondLevelChanged) {
+        canvas.style.backgroundImage = "url('../img/levels/level-3-demo.webp')"; // Новый фон
+        gameSpeed = 4.5; // Увеличиваем скорость
+        obstacleInterval = 1000; // Уменьшаем интервал генерации
+        clearInterval(intervalId);
+        intervalId = setInterval(generateObstacle, obstacleInterval);
+        isSecondLevelChanged = true; // Флаг, чтобы изменения произошли только один раз
       }
       continue;
     }
@@ -224,15 +237,17 @@ function resetGame() {
     height: 70,
     dy: 0,
     gravity: 0.5,
-    jumpPower: -12.5,
+    jumpPower: -10.5,
     onGround: true,
   };
   document.getElementById("score").textContent = "0";
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  canvas.style.backgroundImage = "url('../img/levels/level_sq_1.webp')";
+  // Сбрасываем фон и скорость
+  canvas.style.backgroundImage = "url('../img/levels/level-1.webp')";
   gameSpeed = 4;
   isBackgroundChanged = false;
+  isSecondLevelChanged = false; // Сбрасываем флаг второго уровня
 
   if (showStats) {
     drawStats();
@@ -284,12 +299,12 @@ function drawCharacter() {
 // Экран завершения игры
 function drawGameOver() {
   ctx.fillStyle = "#fff";
-  ctx.font = "40px 'Pixelify Sans', serif";
-  ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 50);
+  ctx.font = "70px 'Pixelify Sans', serif";
+  ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 + 20);
   ctx.font = "30px 'Pixelify Sans', serif";
-  ctx.fillText(`Score: ${score}`, canvas.width / 2, canvas.height / 2);
+  ctx.fillText(`Score: ${score}`, canvas.width / 2, canvas.height / 4);
   ctx.font = "30px 'Pixelify Sans', serif";
-  ctx.fillText("Press R to continue", canvas.width / 2, canvas.height - 50);
+  ctx.fillText("Press R to continue...", canvas.width / 2, canvas.height - 50);
 }
 
 // Игровой цикл
