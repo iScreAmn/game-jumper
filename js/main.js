@@ -82,7 +82,7 @@ function drawStartScreen() {
 
 // Обработка ввода для выбора персонажа
 document.addEventListener("keydown", (e) => {
-  if(!gameStarted && !isGameOver) {
+  if(!gameStarted && !isGameOver && !showStats) {
     switch(e.code) {
       case "ArrowUp":
         selectedCharacterIndex = Math.max(0, selectedCharacterIndex - 1);
@@ -102,14 +102,8 @@ document.addEventListener("keydown", (e) => {
   }
 
   // Обработка прыжка
-  if (e.code === "Space") {
-    if (!gameStarted && !isGameOver) {
-      gameStarted = true;
-      intervalId = setInterval(generateObstacle, 2000);
-      gameLoop();
-    } else if (gameStarted && !isGameOver) {
-      jump();
-    }
+  if (e.code === "Space" && gameStarted && !isGameOver) {
+    jump();
   }
 
   // Обработка рестарта
@@ -177,22 +171,22 @@ function updateObstacles() {
       document.getElementById("score").textContent = score;
 
       // Настройка второго уровня (5 очков)
-      if (score >= 10 && !isBackgroundChanged) {
+      if (score >= 5 && !isBackgroundChanged) {
         canvas.style.backgroundImage = "url('../img/levels/level-2.webp')";
         document.body.style.background = SECOND_GRADIENT; // Добавляет градиент второго уровня
-        gameSpeed = 5;
-        obstacleInterval = 1000;
+        gameSpeed = 4.1;
+        obstacleInterval = 1200;
         clearInterval(intervalId);
         intervalId = setInterval(generateObstacle, obstacleInterval);
         isBackgroundChanged = true;
       }
 
       // Настройка третьего уровня (15 очков)
-      if (score >= 20 && !isSecondLevelChanged) {
+      if (score >= 10 && !isSecondLevelChanged) {
         canvas.style.backgroundImage = "url('../img/levels/level-3-demo.webp')"; // Новый фон
         document.body.style.background = THIRD_GRADIENT;
-        gameSpeed = 4.1; // Увеличиваем скорость
-        obstacleInterval = 1200; // Уменьшаем интервал генерации
+        gameSpeed = 5; // Увеличиваем скорость
+        obstacleInterval = 1000; // Уменьшаем интервал генерации
         character.jumpPower = -10.5;
         clearInterval(intervalId);
         intervalId = setInterval(generateObstacle, obstacleInterval);
