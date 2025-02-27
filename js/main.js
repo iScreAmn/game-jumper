@@ -4,7 +4,7 @@ canvas.width = 500;
 canvas.height = 500;
 
 // Устанавливаем начальный фон
-canvas.style.backgroundImage = "url('../img/levels/level-1.webp')";
+canvas.style.backgroundImage = "url('./img/levels/level-1.webp')";
 
 // Состояния игры
 let isGameOver = false;
@@ -172,7 +172,7 @@ function updateObstacles() {
 
       // Настройка второго уровня (5 очков)
       if (score >= 5 && !isBackgroundChanged) {
-        canvas.style.backgroundImage = "url('../img/levels/level-2.webp')";
+        canvas.style.backgroundImage = "url('./img/levels/level-2.webp')";
         document.body.style.background = SECOND_GRADIENT; // Добавляет градиент второго уровня
         gameSpeed = 4.1;
         obstacleInterval = 1200;
@@ -183,7 +183,7 @@ function updateObstacles() {
 
       // Настройка третьего уровня (15 очков)
       if (score >= 10 && !isSecondLevelChanged) {
-        canvas.style.backgroundImage = "url('../img/levels/level-3-demo.webp')"; // Новый фон
+        canvas.style.backgroundImage = "url('./img/levels/level-3-demo.webp')"; // Новый фон
         document.body.style.background = THIRD_GRADIENT;
         gameSpeed = 5; // Увеличиваем скорость
         obstacleInterval = 1000; // Уменьшаем интервал генерации
@@ -246,7 +246,7 @@ function resetGame() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // Сбрасываем фон и скорость
-  canvas.style.backgroundImage = "url('../img/levels/level-1.webp')";
+  canvas.style.backgroundImage = "url('./img/levels/level-1.webp')";
   gameSpeed = 4;
   isBackgroundChanged = false;
   isSecondLevelChanged = false; // Сбрасываем флаг второго уровня
@@ -308,6 +308,7 @@ function drawGameOver() {
   ctx.font = "30px 'Pixelify Sans', serif";
   ctx.fillText("Press R to continue...", canvas.width / 2, canvas.height - 50);
 }
+
 
 // Игровой цикл
 function gameLoop() {
