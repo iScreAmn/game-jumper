@@ -8,9 +8,23 @@ body {
   flex-direction: column;
   margin: 0;
   height: 100vh;
-  background: rgb(2, 0, 36);
-  background: linear-gradient(45deg, rgba(2, 0, 36, 1) 0%, rgba(51, 133, 204, 1) 52%, rgba(0, 212, 255, 1) 100%);
+  background: linear-gradient(45deg, rgba(2, 0, 36, 1) 0%, rgba(170, 0, 63, 1) 52%, rgba(18, 33, 71, 1) 100%);
+  transition: background-image 0.8s ease-in-out;
   font-family: "Pixelify Sans", serif;
+}
+
+
+canvas {
+  /* border: 2px solid black; */
+  -webkit-box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.75);
+  box-shadow: 10px 10px 10px 0px rgba(0, 0, 0, 0.75);
+  border-radius: 50px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: background-image 0.8s ease-in-out;
+  position: relative;
 }
 
 canvas {
@@ -20,15 +34,6 @@ canvas {
   background-position: center;
   background-repeat: no-repeat; */
   /* border: 2px solid black; */
-}
-
-canvas {
-  border: 2px solid black;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  transition: background-image 0.8s ease-in-out;
-  position: relative;
 }
 
 .score {
