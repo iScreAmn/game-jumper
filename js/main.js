@@ -145,7 +145,7 @@ function updateCharacter() {
   }
 }
 
-// Генерация случайных препятствий (только на уровне земли)
+// Генерация случайных препятствий
 function generateObstacle() {
   const obstacleWidth = Math.floor(Math.random() * (60 - 30 + 1)) + 30;
   const obstacleSpeed = Math.floor(Math.random() * (8 - 4 + 1)) + 4;
@@ -155,7 +155,7 @@ function generateObstacle() {
     x: canvas.width,
     y: obstacleY,
     width: obstacleWidth,
-    height: 50, // Фиксированная высота
+    height: 50,
     speed: obstacleSpeed,
   });
 }
@@ -170,10 +170,10 @@ function updateObstacles() {
       score++;
       document.getElementById("score").textContent = score;
 
-      // Настройка второго уровня (5 очков)
+      // Настройка второго уровня
       if (score >= 5 && !isBackgroundChanged) {
         canvas.style.backgroundImage = "url('./img/levels/level-2.webp')";
-        document.body.style.background = SECOND_GRADIENT; // Добавляет градиент второго уровня
+        document.body.style.background = SECOND_GRADIENT;
         gameSpeed = 4.1;
         obstacleInterval = 1200;
         clearInterval(intervalId);
@@ -181,16 +181,16 @@ function updateObstacles() {
         isBackgroundChanged = true;
       }
 
-      // Настройка третьего уровня (15 очков)
+      // Настройка третьего уровня
       if (score >= 10 && !isSecondLevelChanged) {
         canvas.style.backgroundImage = "url('./img/levels/level-3-demo.webp')"; // Новый фон
         document.body.style.background = THIRD_GRADIENT;
-        gameSpeed = 5; // Увеличиваем скорость
-        obstacleInterval = 1000; // Уменьшаем интервал генерации
+        gameSpeed = 5;
+        obstacleInterval = 1000;
         character.jumpPower = -10.5;
         clearInterval(intervalId);
         intervalId = setInterval(generateObstacle, obstacleInterval);
-        isSecondLevelChanged = true; // Флаг, чтобы изменения произошли только один раз
+        isSecondLevelChanged = true;
       }
       continue;
     }
@@ -321,5 +321,4 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
-// Первоначальная отрисовка
 drawStartScreen();
