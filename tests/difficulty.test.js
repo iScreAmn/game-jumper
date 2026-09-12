@@ -79,7 +79,7 @@ describe('obstacle types', () => {
 
   it('picks the first type for a zero roll and the last for a roll near one', () => {
     expect(pickObstacleType(100, () => 0).name).toBe('small');
-    expect(pickObstacleType(100, () => 0.999999).name).toBe('double');
+    expect(pickObstacleType(100, () => 0.999999).name).toBe('flyHigh');
   });
 
   it('every type is lower than the maximum jump height', () => {

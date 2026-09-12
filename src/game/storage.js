@@ -1,6 +1,6 @@
 import { RECENT_GAMES_LIMIT, STORAGE_KEY } from './config.js';
 
-// Сохранение в localStorage: рекорд, последние игры, настройки.
+// Сохранение в localStorage: рекорд, последние игры, настройки, достижения.
 // Все обращения обёрнуты в try/catch, так как хранилище может быть недоступно.
 
 const DEFAULT_SAVE = {
@@ -8,6 +8,9 @@ const DEFAULT_SAVE = {
   recent: [],
   muted: false,
   characterIndex: 0,
+  daily: { date: '', best: 0 },
+  achievements: [],
+  charactersPlayed: [],
 };
 
 function getStorage() {
@@ -18,21 +21,40 @@ function getStorage() {
   }
 }
 
+function numberList(value) {
+  return Array.isArray(value) ? value.map(Number).filter(Number.isFinite) : [];
+}
+
+function stringList(value) {
+  return Array.isArray(value) ? value.filter((v) => typeof v === 'string') : [];
+}
+
+function normalize(parsed) {
+  const daily = parsed.daily && typeof parsed.daily === 'object' ? parsed.daily : {};
+  return {
+    best: Number(parsed.best) || 0,
+    recent: numberList(parsed.recent),
+    muted: Boolean(parsed.muted),
+    characterIndex: Number(parsed.characterIndex) || 0,
+    daily: { date: typeof daily.date === 'string' ? daily.date : '', best: Number(daily.best) || 0 },
+    achievements: stringList(parsed.achievements),
+    charactersPlayed: numberList(parsed.charactersPlayed),
+  };
+}
+
+function clone(save) {
+  return { ...save, daily: { ...save.daily }, recent: [...save.recent], achievements: [...save.achievements], charactersPlayed: [...save.charactersPlayed] };
+}
+
 function loadSave() {
   const storage = getStorage();
-  if (!storage) return { ...DEFAULT_SAVE };
+  if (!storage) return clone(DEFAULT_SAVE);
   try {
     const raw = storage.getItem(STORAGE_KEY);
-    if (!raw) return { ...DEFAULT_SAVE };
-    const parsed = JSON.parse(raw);
-    return {
-      best: Number(parsed.best) || 0,
-      recent: Array.isArray(parsed.recent) ? parsed.recent.map(Number).filter(Number.isFinite) : [],
-      muted: Boolean(parsed.muted),
-      characterIndex: Number(parsed.characterIndex) || 0,
-    };
+    if (!raw) return clone(DEFAULT_SAVE);
+    return normalize(JSON.parse(raw));
   } catch {
-    return { ...DEFAULT_SAVE };
+    return clone(DEFAULT_SAVE);
   }
 }
 
@@ -52,14 +74,46 @@ function updateSave(patch) {
   return next;
 }
 
-/** Записывает результат игры. Возвращает обновлённое сохранение и флаг нового рекорда. */
-function recordGame(score) {
+/**
+ * Записывает результат игры.
+ * @param {number} score
+ * @param {object} [opts]
+ * @param {'endless'|'daily'} [opts.mode]
+ * @param {string} [opts.dayKey] - ключ дня для режима daily
+ * @returns {{save: object, isNewBest: boolean, isNewDailyBest: boolean}}
+ */
+function recordGame(score, { mode = 'endless', dayKey = '' } = {}) {
   const save = loadSave();
   const isNewBest = score > save.best;
   const recent = [...save.recent, score].slice(-RECENT_GAMES_LIMIT);
-  const next = { ...save, best: Math.max(save.best, score), recent };
+
+  let daily = save.daily;
+  let isNewDailyBest = false;
+  if (mode === 'daily') {
+    const sameDay = save.daily.date === dayKey;
+    const previous = sameDay ? save.daily.best : 0;
+    isNewDailyBest = score > previous;
+    daily = { date: dayKey, best: Math.max(previous, score) };
+  }
+
+  const next = { ...save, best: Math.max(save.best, score), recent, daily };
   writeSave(next);
-  return { save: next, isNewBest };
+  return { save: next, isNewBest, isNewDailyBest };
 }
 
-export { loadSave, updateSave, recordGame, DEFAULT_SAVE };
+/** Отмечает персонажа сыгранным. Возвращает обновлённое сохранение. */
+function markCharacterPlayed(index) {
+  const save = loadSave();
+  if (save.charactersPlayed.includes(index)) return save;
+  return updateSave({ charactersPlayed: [...save.charactersPlayed, index] });
+}
+
+/** Добавляет открытые достижения. Возвращает обновлённое сохранение. */
+function unlockAchievements(ids) {
+  const save = loadSave();
+  const merged = [...new Set([...save.achievements, ...ids])];
+  if (merged.length === save.achievements.length) return save;
+  return updateSave({ achievements: merged });
+}
+
+export { loadSave, updateSave, recordGame, markCharacterPlayed, unlockAchievements, DEFAULT_SAVE };
