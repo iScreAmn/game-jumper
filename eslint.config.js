@@ -22,4 +22,10 @@ export default [
       eqeqeq: ['error', 'always'],
     },
   },
+  {
+    files: ['public/sw.js'],
+    languageOptions: {
+      globals: globals.serviceworker,
+    },
+  },
 ];
