@@ -11,7 +11,13 @@ class ObstacleManager {
     this.random = random;
     this.obstacles = [];
     this.sprite = loadImage(obstacleSpritePath);
+    this.time = 0;
     this.reset();
+  }
+
+  /** Подменяет источник случайности, например на сид дневного испытания. */
+  setRandom(random) {
+    this.random = random;
   }
 
   reset() {
@@ -31,14 +37,16 @@ class ObstacleManager {
     this.obstacles.push({
       type: type.name,
       x: CANVAS.width,
-      y: GROUND_Y - type.height,
+      y: GROUND_Y - type.altitude - type.height,
       width: totalWidth,
       height: type.height,
+      altitude: type.altitude,
+      flying: Boolean(type.flying),
       spriteWidth: type.width,
       count: type.count,
       gap: type.gap ?? 0,
       hitbox: OBSTACLE_HITBOX,
-      passed: false,
+      bobPhase: this.random() * Math.PI * 2,
     });
 
     this.lastObstacleWidth = totalWidth;
@@ -62,9 +70,10 @@ class ObstacleManager {
    * @param {number} dt - время кадра в секундах
    * @param {number} speed - скорость мира в px/s
    * @param {number} score - текущий счёт, влияет на типы и интервалы
-   * @param {() => void} onPassed - вызывается, когда игрок обошёл препятствие
+   * @param {(obstacle: object) => void} onPassed - вызывается, когда игрок обошёл препятствие
    */
   update(dt, speed, score, onPassed) {
+    this.time += dt;
     this.currentSpeed = speed;
     const travelled = speed * dt;
 
@@ -73,7 +82,7 @@ class ObstacleManager {
       obs.x -= travelled;
       if (obs.x + obs.width < 0) {
         this.obstacles.splice(i, 1);
-        onPassed?.();
+        onPassed?.(obs);
       }
     }
 
@@ -86,9 +95,20 @@ class ObstacleManager {
   draw(ctx) {
     if (!this.sprite.complete) return;
     for (const obs of this.obstacles) {
+      // Летающие метеоры слегка покачиваются, чтобы читались как парящие.
+      const bob = obs.flying ? Math.sin(this.time * 6 + obs.bobPhase) * 3 : 0;
       for (let i = 0; i < obs.count; i++) {
         const x = obs.x + i * (obs.spriteWidth + obs.gap);
-        ctx.drawImage(this.sprite, x, obs.y, obs.spriteWidth, obs.height);
+        if (obs.flying) {
+          // Летящий метеор рисуем перевёрнутым: хвост пламени тянется вверх.
+          ctx.save();
+          ctx.translate(x + obs.spriteWidth / 2, obs.y + obs.height / 2 + bob);
+          ctx.rotate(Math.PI * 0.85);
+          ctx.drawImage(this.sprite, -obs.spriteWidth / 2, -obs.height / 2, obs.spriteWidth, obs.height);
+          ctx.restore();
+        } else {
+          ctx.drawImage(this.sprite, x, obs.y, obs.spriteWidth, obs.height);
+        }
       }
     }
   }

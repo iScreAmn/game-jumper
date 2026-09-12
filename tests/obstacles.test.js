@@ -69,8 +69,8 @@ describe('ObstacleManager', () => {
   });
 
   it('spawns double obstacles with combined width', () => {
-    // random=0.999 выбирает последний доступный тип: при score 100 это double.
-    const manager = new ObstacleManager(() => 0.999);
+    // Суммарный вес при score 100 равен 16, double занимает диапазон [9, 11): roll 0.6 попадает в него.
+    const manager = new ObstacleManager(() => 0.6);
     simulate(manager, { seconds: 2, speed: 300, score: 100 });
     const double = manager.obstacles.find((o) => o.type === 'double');
     expect(double).toBeDefined();
