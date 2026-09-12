@@ -10,8 +10,11 @@ Your mission is to flee from the end of the world by jumping over fiery meteors 
 
 **🎮 Game Features:**
 - **Unique Design:** Inspired by the famous dino from Google Chrome's offline mode, but with a new, apocalyptic twist.
-- **Dynamic Obstacles:** Small, wide, tall and double meteors unlock as your score grows.
+- **Dynamic Obstacles:** Small, wide, tall and double meteors on the ground, plus low and high flying meteors. Duck under the low ones and never jump under the high ones.
 - **Smooth Difficulty:** The world speeds up with every point, and the scenery changes as you reach new milestones.
+- **Game Feel:** Squash and stretch animation, dust and sparks, screen shake and hit-stop on impact, parallax layers.
+- **Daily Challenge:** Every day has its own seeded obstacle course shared by all players, with a separate daily best.
+- **Achievements:** Nine awards from the first run to ducking under five meteors in a single run.
 - **Survival Challenge:** How long can you last in this blazing world?
 
 **🛠 Technologies:**
@@ -21,26 +24,32 @@ Your mission is to flee from the end of the world by jumping over fiery meteors 
 - **Canvas API**
 - **Web Audio API** for synthesized sound effects
 - **Vite** for dev server and build, **Vitest** for tests, **ESLint** for linting
+- **PWA:** installable, works offline through a service worker
+- **GitHub Actions** for CI and deployment to GitHub Pages
 
 **🚀 Functionality:**
 
 - ✅ Endless runner with frame-rate independent physics
 - ✅ Variable jump height: tap for a short hop, hold for a high jump
-- ✅ Four obstacle types with fair hitboxes
-- ✅ Four visual levels with crossfade backgrounds
+- ✅ Ducking and fast fall
+- ✅ Six obstacle types with fair hitboxes
+- ✅ Four visual levels with crossfade backgrounds and procedural parallax
 - ✅ Three playable characters
+- ✅ Particles, screen shake, hit-stop, floating score and level flashes
 - ✅ Pause, including automatic pause when the tab is hidden
-- ✅ Best score and recent runs saved in localStorage
+- ✅ Best score, daily best, recent runs and achievements saved in localStorage
 - ✅ Sound effects with mute toggle
-- ✅ Works on touch devices: the canvas scales to the screen and every action is a tap
+- ✅ Respects `prefers-reduced-motion`
+- ✅ Works on touch devices: the canvas scales to the screen, tap to jump, swipe down to duck
 
 **🕹️ Controls:**
-- **Space / ↑ / Tap** - jump (hold for a higher jump)
+- **Space / ↑ / W / Tap** - jump (hold for a higher jump)
+- **↓ / S / Swipe down** - duck, or fast fall while in the air
 - **Enter** - start / restart
-- **↑ ↓** - choose a character, **Esc** - back
+- **↑ ↓** - navigate menus, **Esc** - back
 - **Esc / P** - pause
 - **M** - mute sound
-- **S** - stats, **C** - change character (on the game over screen)
+- **S** - stats, **A** - achievements, **C** - change character (on the game over screen)
 
 **💻 Development:**
 
@@ -50,8 +59,9 @@ npm run dev      # dev server
 npm test         # unit tests
 npm run lint     # eslint
 npm run build    # production build in dist/
-npm run deploy   # publish to GitHub Pages
 ```
+
+Pushes to `main` run lint, tests and build in GitHub Actions and deploy `dist/` to GitHub Pages. For the deploy job to work, set the repository's Pages source to **GitHub Actions** (Settings → Pages → Build and deployment). The `npm run deploy` script still publishes manually through the `gh-pages` branch if you prefer that.
 
 Play to find out how far you can run from the flames of doomsday. Courage, reflexes, and a bit of luck are what you need for salvation!
 
@@ -62,5 +72,5 @@ Play to find out how far you can run from the flames of doomsday. Courage, refle
 ## 📜 Author
 
 👨‍💻 **Developer:** Dimitri Jmukhadze
-📩 **Contact:** [email@example.com](mailto:jmukhadze.dimitri@gmail.com)
+📩 **Contact:** [jmukhadze.dimitri@gmail.com](mailto:jmukhadze.dimitri@gmail.com)
 🚀 **Portfolio:** [DJprojects](https://practicum-react-portfolio.netlify.app)
