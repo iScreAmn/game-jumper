@@ -1,6 +1,6 @@
 {
   "name": "game-jumper",
-  "version": "1.0.0",
+  "version": "0.0.4",
   "description": "Flame Jumper: an endless runner on Canvas API",
   "type": "module",
   "private": true,
