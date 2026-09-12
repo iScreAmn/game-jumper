@@ -1,72 +1,64 @@
-
-// Импорт спрайтов персонажей
 import amberSpritePath from '../assets/images/characters/character.webp';
 import marioSpritePath from '../assets/images/characters/mario.webp';
 import turtleSpritePath from '../assets/images/characters/turtle.webp';
+import { GROUND_Y, PHYSICS, PLAYER } from './config.js';
+import { loadImage } from './assets.js';
 
-// Определения персонажей
 const CHARACTER_DEFINITIONS = [
-  { name: "Amber", src: amberSpritePath },
-  { name: "Mario", src: marioSpritePath },
-  { name: "Turtle", src: turtleSpritePath },
+  { name: 'Amber', src: amberSpritePath },
+  { name: 'Mario', src: marioSpritePath },
+  { name: 'Turtle', src: turtleSpritePath },
 ];
 
 class Player {
-  constructor(canvas) {
-    this.canvas = canvas; // Ссылка на canvas для получения высоты земли, если нужно
-    this.x = 50;
-    this.y = 280; // Начальная позиция Y (земля)
-    this.width = 45;
-    this.height = 70;
-    this.dy = 0; // Скорость по оси Y
-    this.gravity = 0.5;
-    this.jumpPower = -10.5; // Начальная сила прыжка, может меняться уровнем
+  constructor() {
+    this.x = PLAYER.x;
+    this.width = PLAYER.width;
+    this.height = PLAYER.height;
+    this.hitbox = PLAYER.hitbox;
+    this.groundY = GROUND_Y - this.height;
+    this.y = this.groundY;
+    this.dy = 0;
     this.onGround = true;
 
-    this.characters = CHARACTER_DEFINITIONS;
+    // Все спрайты грузятся заранее, при выборе просто меняется ссылка.
+    this.characters = CHARACTER_DEFINITIONS.map((def) => ({
+      name: def.name,
+      sprite: loadImage(def.src),
+    }));
     this.selectedCharacterIndex = 0;
-    this.characterImg = new Image();
-    
-    // Загрузка всех изображений персонажей заранее
-    this.characterSprites = this.characters.map(charDef => {
-        const img = new Image();
-        img.src = charDef.src;
-        return img;
-    });
-    this.characterImg.src = this.characterSprites[this.selectedCharacterIndex].src;
-
-    this.groundY = 280; // Позиция земли
   }
 
-  /**
-   * Выбирает персонажа по индексу.
-   * @param {number} index - Индекс выбранного персонажа.
-   */
+  get sprite() {
+    return this.characters[this.selectedCharacterIndex].sprite;
+  }
+
   selectCharacter(index) {
-    if (index >= 0 && index < this.characterSprites.length) {
+    if (index >= 0 && index < this.characters.length) {
       this.selectedCharacterIndex = index;
-      this.characterImg.src = this.characterSprites[this.selectedCharacterIndex].src;
     }
   }
 
-  /**
-   * Заставляет персонажа прыгнуть.
-   */
+  /** Начинает прыжок, если персонаж стоит на земле. Возвращает true при успехе. */
   jump() {
-    if (this.onGround) {
-      this.dy = this.jumpPower;
-      this.onGround = false;
+    if (!this.onGround) return false;
+    this.dy = PHYSICS.jumpVelocity;
+    this.onGround = false;
+    return true;
+  }
+
+  /** Досрочно гасит прыжок при отпускании кнопки: короткое нажатие даёт низкий прыжок. */
+  cutJump() {
+    if (!this.onGround && this.dy < 0) {
+      this.dy *= PHYSICS.jumpCutMultiplier;
     }
   }
 
-  /**
-   * Обновляет состояние персонажа (гравитация, положение).
-   */
-  update() {
-    this.y += this.dy;
-    this.dy += this.gravity;
+  /** @param {number} dt - время кадра в секундах */
+  update(dt) {
+    this.dy += PHYSICS.gravity * dt;
+    this.y += this.dy * dt;
 
-    // Проверка столкновения с землей
     if (this.y >= this.groundY) {
       this.y = this.groundY;
       this.dy = 0;
@@ -74,36 +66,15 @@ class Player {
     }
   }
 
-  /**
-   * Отрисовывает персонажа на холсте.
-   * @param {CanvasRenderingContext2D} ctx - Контекст рендеринга холста.
-   */
   draw(ctx) {
-    ctx.drawImage(this.characterImg, this.x, this.y, this.width, this.height);
+    if (!this.sprite.complete) return;
+    ctx.drawImage(this.sprite, this.x, this.y, this.width, this.height);
   }
 
-  /**
-   * Сбрасывает состояние персонажа к начальному.
-   * @param {object} initialLevelConfig - Конфигурация начального уровня для установки jumpPower.
-   */
-  reset(initialLevelConfig) {
+  reset() {
     this.y = this.groundY;
     this.dy = 0;
     this.onGround = true;
-    this.jumpPower = initialLevelConfig.playerJumpPower;
-    // Индекс выбранного персонажа сохраняется между играми,
-    // но если нужно сбрасывать и его, добавь:
-    // this.selectCharacter(0); 
-  }
-
-  /**
-   * Возвращает массив определений персонажей для экрана выбора.
-   * @returns {Array<object>} Массив с именами персонажей.
-   */
-  getCharacterDefinitionsForSelection() {
-    return this.characters.map(charDef => ({
-      name: charDef.name
-    }));
   }
 }
 

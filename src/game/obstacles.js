@@ -1,96 +1,96 @@
-// src/game/obstacles.js
-
 import obstacleSpritePath from '../assets/images/obstacles/obstacle.webp';
+import { CANVAS, GROUND_Y, OBSTACLE_HITBOX } from './config.js';
+import { gapTimeRangeForScore, pickObstacleType } from './difficulty.js';
+import { loadImage } from './assets.js';
+
+// Сколько пикселей мир проезжает до первого препятствия после старта.
+const INITIAL_SPAWN_DISTANCE = 250;
 
 class ObstacleManager {
-  constructor(canvas) {
-    this.canvas = canvas;
+  constructor(random = Math.random) {
+    this.random = random;
     this.obstacles = [];
-    this.obstacleImg = new Image();
-    this.obstacleImg.src = obstacleSpritePath;
-    this.obstacleGenerationTimer = null;
-    this.groundY = 300; // Фиксированная высота появления препятствий (уровень земли)
+    this.sprite = loadImage(obstacleSpritePath);
+    this.reset();
   }
 
-  /**
-   * Начинает генерацию препятствий с заданным интервалом.
-   * @param {number} interval - Интервал в миллисекундах.
-   */
-  startGenerating(interval) {
-    this.stopGenerating(); // Остановить предыдущий таймер, если он был
-    this.generateObstacle(); // Сгенерировать одно сразу
-    this.obstacleGenerationTimer = setInterval(() => this.generateObstacle(), interval);
-  }
-
-  /**
-   * Останавливает генерацию препятствий.
-   */
-  stopGenerating() {
-    if (this.obstacleGenerationTimer) {
-      clearInterval(this.obstacleGenerationTimer);
-      this.obstacleGenerationTimer = null;
-    }
-  }
-
-  /**
-   * Генерирует новое препятствие.
-   */
-  generateObstacle() {
-    const minWidth = 30;
-    const maxWidth = 60;
-    const obstacleWidth = Math.floor(Math.random() * (maxWidth - minWidth + 1)) + minWidth;
-    
-    // Скорость препятствий может быть фиксированной или зависеть от уровня
-    // В оригинальном коде скорость была случайной, но для предсказуемости лучше ее связать с gameSpeed уровня
-    // const minSpeed = 4;
-    // const maxSpeed = 8;
-    // const obstacleSpeed = Math.floor(Math.random() * (maxSpeed - minSpeed + 1)) + minSpeed;
-    // Пока оставим как было, но это кандидат на перенос в levelConfig
-
-    this.obstacles.push({
-      x: this.canvas.width,
-      y: this.groundY, // Препятствия появляются на земле
-      width: obstacleWidth,
-      height: 50, // Фиксированная высота препятствия
-      // speed: obstacleSpeed, // Используем gameSpeed из конфига уровня
-    });
-  }
-
-  /**
-   * Обновляет положение всех препятствий и удаляет те, что вышли за экран.
-   * @param {number} gameSpeed - Текущая скорость игры (из настроек уровня).
-   * @param {function} onObstaclePassed - Callback, вызываемый когда препятствие успешно пройдено.
-   */
-  update(gameSpeed, onObstaclePassed) {
-    for (let i = this.obstacles.length - 1; i >= 0; i--) {
-      const obs = this.obstacles[i];
-      obs.x -= gameSpeed; // Двигаем препятствие в соответствии с общей скоростью игры
-
-      if (obs.x + obs.width < 0) { // Если препятствие ушло за левый край
-        this.obstacles.splice(i, 1);
-        if (onObstaclePassed) {
-          onObstaclePassed(); // Сообщаем, что препятствие пройдено (для увеличения счета)
-        }
-      }
-    }
-  }
-
-  /**
-   * Отрисовывает все активные препятствия.
-   * @param {CanvasRenderingContext2D} ctx - Контекст рендеринга.
-   */
-  draw(ctx) {
-    this.obstacles.forEach(obs => {
-      ctx.drawImage(this.obstacleImg, obs.x, obs.y, obs.width, obs.height);
-    });
-  }
-
-  /**
-   * Очищает все препятствия.
-   */
   reset() {
     this.obstacles = [];
-    this.stopGenerating();
+    this.currentSpeed = 0;
+    // Расстояние, которое мир проехал с последнего спавна, и цель для следующего.
+    this.distanceSinceSpawn = 0;
+    this.nextSpawnDistance = INITIAL_SPAWN_DISTANCE;
+    this.lastObstacleWidth = 0;
+  }
+
+  /** Создаёт препятствие у правого края холста. */
+  spawn(score) {
+    const type = pickObstacleType(score, this.random);
+    const totalWidth = type.count * type.width + (type.count - 1) * (type.gap ?? 0);
+
+    this.obstacles.push({
+      type: type.name,
+      x: CANVAS.width,
+      y: GROUND_Y - type.height,
+      width: totalWidth,
+      height: type.height,
+      spriteWidth: type.width,
+      count: type.count,
+      gap: type.gap ?? 0,
+      hitbox: OBSTACLE_HITBOX,
+      passed: false,
+    });
+
+    this.lastObstacleWidth = totalWidth;
+    this.distanceSinceSpawn = 0;
+    this.nextSpawnDistance = this.rollNextSpawnDistance(score);
+  }
+
+  /**
+   * Следующий спавн происходит, когда мир проедет ширину предыдущего препятствия
+   * плюс случайный интервал, выраженный в секундах пути. Поэтому зазор
+   * всегда пропорционален скорости и остаётся перепрыгиваемым.
+   */
+  rollNextSpawnDistance(score) {
+    const range = gapTimeRangeForScore(score);
+    const gapTime = range.min + this.random() * (range.max - range.min);
+    return this.lastObstacleWidth + gapTime * this.currentSpeed;
+  }
+
+  /**
+   * Двигает препятствия, спавнит новые и удаляет ушедшие за экран.
+   * @param {number} dt - время кадра в секундах
+   * @param {number} speed - скорость мира в px/s
+   * @param {number} score - текущий счёт, влияет на типы и интервалы
+   * @param {() => void} onPassed - вызывается, когда игрок обошёл препятствие
+   */
+  update(dt, speed, score, onPassed) {
+    this.currentSpeed = speed;
+    const travelled = speed * dt;
+
+    for (let i = this.obstacles.length - 1; i >= 0; i--) {
+      const obs = this.obstacles[i];
+      obs.x -= travelled;
+      if (obs.x + obs.width < 0) {
+        this.obstacles.splice(i, 1);
+        onPassed?.();
+      }
+    }
+
+    this.distanceSinceSpawn += travelled;
+    if (this.distanceSinceSpawn >= this.nextSpawnDistance) {
+      this.spawn(score);
+    }
+  }
+
+  draw(ctx) {
+    if (!this.sprite.complete) return;
+    for (const obs of this.obstacles) {
+      for (let i = 0; i < obs.count; i++) {
+        const x = obs.x + i * (obs.spriteWidth + obs.gap);
+        ctx.drawImage(this.sprite, x, obs.y, obs.spriteWidth, obs.height);
+      }
+    }
   }
 }
 
