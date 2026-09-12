@@ -1,6 +1,6 @@
 ## Flame Jumper
 
-<img src="./img/fj.gif">
+<img src="./src/assets/images/fj.gif">
 
 **Game Description:**
 
@@ -10,25 +10,48 @@ Your mission is to flee from the end of the world by jumping over fiery meteors 
 
 **🎮 Game Features:**
 - **Unique Design:** Inspired by the famous dino from Google Chrome's offline mode, but with a new, apocalyptic twist.
-- **Dynamic Obstacles:** Fiery meteors falling from nowhere demand instant decision-making.
+- **Dynamic Obstacles:** Small, wide, tall and double meteors unlock as your score grows.
+- **Smooth Difficulty:** The world speeds up with every point, and the scenery changes as you reach new milestones.
 - **Survival Challenge:** How long can you last in this blazing world?
 
 **🛠 Technologies:**
 - **HTML5**
 - **CSS3**
-- **JavaScript**
-- **Canvas API** 
+- **JavaScript (ES modules)**
+- **Canvas API**
+- **Web Audio API** for synthesized sound effects
+- **Vite** for dev server and build, **Vitest** for tests, **ESLint** for linting
 
 **🚀 Functionality:**
 
-- ✅ Endless runner – obstacles are generated automatically
-- ✅ Collisions – the game detects collisions with obstacles
-- ✅ Score counter – increases for each successfully avoided obstacle
-- ✅ Simple and intuitive interface – only the character, obstacles, and score
+- ✅ Endless runner with frame-rate independent physics
+- ✅ Variable jump height: tap for a short hop, hold for a high jump
+- ✅ Four obstacle types with fair hitboxes
+- ✅ Four visual levels with crossfade backgrounds
+- ✅ Three playable characters
+- ✅ Pause, including automatic pause when the tab is hidden
+- ✅ Best score and recent runs saved in localStorage
+- ✅ Sound effects with mute toggle
+- ✅ Works on touch devices: the canvas scales to the screen and every action is a tap
 
 **🕹️ Controls:**
-- **Spacebar - Start / Jump**
-- **R - Restart**
+- **Space / ↑ / Tap** - jump (hold for a higher jump)
+- **Enter** - start / restart
+- **↑ ↓** - choose a character, **Esc** - back
+- **Esc / P** - pause
+- **M** - mute sound
+- **S** - stats, **C** - change character (on the game over screen)
+
+**💻 Development:**
+
+```bash
+npm install
+npm run dev      # dev server
+npm test         # unit tests
+npm run lint     # eslint
+npm run build    # production build in dist/
+npm run deploy   # publish to GitHub Pages
+```
 
 Play to find out how far you can run from the flames of doomsday. Courage, reflexes, and a bit of luck are what you need for salvation!
 
@@ -36,9 +59,8 @@ Play to find out how far you can run from the flames of doomsday. Courage, refle
 
 ---
 
-## 📜 Author  
+## 📜 Author
 
-👨‍💻 **Developer:** Dimitri Jmukhadze  
-📩 **Contact:** [email@example.com](mailto:jmukhadze.dimitri@gmail.com)  
-🚀 **Portfolio:** [DJprojects](https://practicum-react-portfolio.netlify.app)  
-
+👨‍💻 **Developer:** Dimitri Jmukhadze
+📩 **Contact:** [email@example.com](mailto:jmukhadze.dimitri@gmail.com)
+🚀 **Portfolio:** [DJprojects](https://practicum-react-portfolio.netlify.app)
